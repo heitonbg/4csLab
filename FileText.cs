@@ -4,66 +4,69 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 
-[Serializable]
-public class FileText
+namespace TextFileEditor
 {
-  public string FilePath { get; set; }
-  public string Content { get; set; }
-  public DateTime LastModified { get; set; }
-
-  public FileText() { }
-
-  public FileText(string filePath, string content)
+  [Serializable]
+  public class FileText
   {
-    FilePath = filePath;
-    Content = content;
-    LastModified = DateTime.Now;
-  }
+    public string FilePath { get; set; }
+    public string Content { get; set; }
+    public DateTime LastModified { get; set; }
 
-  public void BinarySerialize(string filePath)
-  {
-    IFormatter formatter = new BinaryFormatter();
-    using (Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+    public FileText() { }
+
+    public FileText(string filePath, string content)
     {
-      formatter.Serialize(stream, this);
+      FilePath = filePath;
+      Content = content;
+      LastModified = DateTime.Now;
     }
-  }
 
-  public static FileText BinaryDeserialize(string filePath)
-  {
-    IFormatter formatter = new BinaryFormatter();
-    using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+    public void BinarySerialize(string filePath)
     {
-      return (FileText)formatter.Deserialize(stream);
+      IFormatter formatter = new BinaryFormatter();
+      using (Stream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+      {
+        formatter.Serialize(stream, this);
+      }
     }
-  }
 
-  public void XmlSerialize(string filePath)
-  {
-    XmlSerializer serializer = new XmlSerializer(typeof(FileText));
-    using (TextWriter writer = new StreamWriter(filePath))
+    public static FileText BinaryDeserialize(string filePath)
     {
-      serializer.Serialize(writer, this);
+      IFormatter formatter = new BinaryFormatter();
+      using (Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+      {
+        return (FileText)formatter.Deserialize(stream);
+      }
     }
-  }
 
-  public static FileText XmlDeserialize(string filePath)
-  {
-    XmlSerializer serializer = new XmlSerializer(typeof(FileText));
-    using (TextReader reader = new StreamReader(filePath))
+    public void XmlSerialize(string filePath)
     {
-      return (FileText)serializer.Deserialize(reader);
+      XmlSerializer serializer = new XmlSerializer(typeof(FileText));
+      using (TextWriter writer = new StreamWriter(filePath))
+      {
+        serializer.Serialize(writer, this);
+      }
     }
-  }
 
-  public void SaveToFile()
-  {
-    File.WriteAllText(FilePath, Content);
-    LastModified = DateTime.Now;
-  }
+    public static FileText XmlDeserialize(string filePath)
+    {
+      XmlSerializer serializer = new XmlSerializer(typeof(FileText));
+      using (TextReader reader = new StreamReader(filePath))
+      {
+        return (FileText)serializer.Deserialize(reader);
+      }
+    }
 
-  public static FileText LoadFromFile(string filePath)
-  {
-    return new FileText(filePath, File.ReadAllText(filePath));
+    public void SaveToFile()
+    {
+      File.WriteAllText(FilePath, Content);
+      LastModified = DateTime.Now;
+    }
+
+    public static FileText LoadFromFile(string filePath)
+    {
+      return new FileText(filePath, File.ReadAllText(filePath));
+    }
   }
 }
